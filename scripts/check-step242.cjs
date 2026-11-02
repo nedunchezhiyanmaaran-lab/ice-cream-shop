@@ -1,0 +1,37 @@
+const puppeteer = require('puppeteer-core');
+const fs = require('fs');
+
+async function checkStep242Images() {
+  const browser = await puppeteer.launch({
+    executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    headless: true,
+    defaultViewport: { width: 1400, height: 900 }
+  });
+  const page = await browser.newPage();
+
+  const files = [
+    'media_1793608197386_26fc6581.jpg',
+    'media_1793608206256_d1525811.jpg',
+    'media_1793608215238_015e1ae3.jpg',
+    'media_1793609382051_01050155.jpg'
+  ];
+
+  const html = `<!DOCTYPE html>
+  <body style="margin:0; background:#111; color:#fff; font-family:sans-serif; padding:20px; display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;">
+    ${files.map(f => {
+      const b64 = fs.readFileSync('C:/Users/dell/.gemini/antigravity/brain/db85d9da-7aa8-4a89-a7cb-87ec76cdebab/.user_uploaded/' + f).toString('base64');
+      return `<div>
+        <p style="font-size:10px;">${f}</p>
+        <img src="data:image/jpeg;base64,${b64}" style="width:100%; height:250px; object-fit:contain; background:#222;" />
+      </div>`;
+    }).join('')}
+  </body>`;
+
+  await page.setContent(html);
+  await page.screenshot({ path: 'scripts/step242-images.png' });
+  await browser.close();
+  console.log('Saved step242-images.png');
+}
+
+checkStep242Images().catch(console.error);
+
